@@ -1,0 +1,22 @@
+{
+  "name": "utilility",
+  "version": "1.0.0",
+  "description": "a set of rare utility functions or factories that can make javascript code better readable",
+  "main": "utility.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thebhaskara/utilility.git"
+  },
+  "author": "Bhaskara Rama Sai Busam",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/thebhaskara/utilility/issues"
+  },
+  "homepage": "https://github.com/thebhaskara/utilility#readme",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
