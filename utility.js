@@ -11,13 +11,13 @@
 
     var Utility = {};
 
-    Utility.Callback = function() {
+    var callback = Utility.Callback = function() {
         this.callbacks = [];
         this.isExecuted = false;
         this.args = [];
     };
 
-    Utility.Callback.prototype.execute = function() {
+    callback.prototype.execute = function() {
         if (!this.isExecuted) {
             this.isExecuted = true;
             this.args = arguments;
@@ -31,7 +31,7 @@
         }
     };
 
-    Utility.Callback.prototype.add = function(callback) {
+    callback.prototype.add = function(callback) {
         this.callbacks.push(callback);
         this.isExecuted && this.execute();
     };
@@ -48,7 +48,7 @@
         if (lodash.isString(path)) {
             return lodash.get(this.attributes, path);
         } else {
-        	return this.attributes;
+            return this.attributes;
         }
     }
 
@@ -143,6 +143,40 @@
         delete watch.path;
         delete watch.callback;
         delete watches[id];
+    }
+
+    Model.registerAjaxCallback = function(callback) {
+        Model.ajaxCallback = callback;
+    }
+
+    var executeAjax = function(options) {
+        Model.ajaxCallback(options);
+    };
+
+    var fineTuneOptions = function(options, settings){
+
+        var model = settings.model;
+
+        options.method = options.method || settings.method;
+        options.data = options.data || model.attributes;
+        options.data = JSON.stringify(options.data);
+
+        options.url = options.url || model.url;
+        if(settings.isById == true) {
+            options.url += '/'+ (model.idAttribute ? model.get(model.idAttribute) : model.get('id'));
+        }
+
+        return options;
+    }
+
+    ModelPrototype.fetch = function(options) {
+        fineTuneOptions(options, {
+            method: 'get',
+            model: this,
+            isById: false
+        });
+
+
     }
 
     return Utility;
