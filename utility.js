@@ -17,23 +17,27 @@
         this.args = [];
     };
 
-    callback.prototype.execute = function() {
-        if (!this.isExecuted) {
-            this.isExecuted = true;
-            this.args = arguments;
-        }
-        if (this.callbacks.length > 0) {
-            var callback = this.callbacks.pop();
-            if (lodash.isFunction(callback)) {
-                callback.apply(null, this.args);
-            }
-            this.execute.apply(this, this.args);
-        }
+    callback.prototype.run = function() {
+
+        var args = [arguments];
+        this.args.push(arguments);
+
+        lodash.each(this.callbacks, function(callback) {
+            runCallback(callback, args)
+        });
     };
+
+    var runCallback = function(callback, args) {
+        if (lodash.isFunction(callback)) {
+            lodash.each(args, function(arg) {
+                callback.apply(null, arg);
+            })
+        }
+    }
 
     callback.prototype.add = function(callback) {
         this.callbacks.push(callback);
-        this.isExecuted && this.execute();
+        this.args.length > 0 && runCallback(callback, this.args);
     };
 
     var Model = Utility.Model = function(attributes, options) {
@@ -153,7 +157,7 @@
         Model.ajaxCallback(options);
     };
 
-    var fineTuneOptions = function(options, settings){
+    var fineTuneOptions = function(options, settings) {
 
         var model = settings.model;
 
@@ -162,8 +166,8 @@
         options.data = JSON.stringify(options.data);
 
         options.url = options.url || model.url;
-        if(settings.isById == true) {
-            options.url += '/'+ (model.idAttribute ? model.get(model.idAttribute) : model.get('id'));
+        if (settings.isById == true) {
+            options.url += '/' + (model.idAttribute ? model.get(model.idAttribute) : model.get('id'));
         }
 
         return options;
